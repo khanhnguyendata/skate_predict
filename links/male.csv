@@ -1,4 +1,5 @@
 event,year,url
+US,2005,http://www.isuresults.com/results/gpusa04/CAT001RS.HTM
 US,2006,http://www.isuresults.com/results/gpusa05/CAT001RS.HTM
 US,2007,http://www.isuresults.com/results/gpusa06/CAT001RS.HTM
 US,2008,http://www.isuresults.com/results/gpusa07/CAT001RS.HTM
@@ -12,6 +13,8 @@ US,2015,http://www.isuresults.com/results/gpusa2014/CAT001RS.HTM
 US,2016,http://www.isuresults.com/results/season1516/gpusa2015/CAT001RS.HTM
 US,2017,http://www.isuresults.com/results/season1617/gpusa2016/CAT001RS.HTM
 US,2018,http://www.isuresults.com/results/season1718/gpusa2017/CAT001RS.HTM
+US,2019,http://www.isuresults.com/results/season1819/gpusa2018/CAT001RS.HTM
+CA,2005,http://www.isuresults.com/results/gpcan04/CAT001RS.HTM
 CA,2006,http://www.isuresults.com/results/gpcan05/CAT001RS.HTM
 CA,2007,http://www.isuresults.com/results/gpcan06/CAT001RS.HTM
 CA,2008,http://www.isuresults.com/results/gpcan07/CAT001RS.HTM
@@ -25,6 +28,8 @@ CA,2015,http://www.isuresults.com/results/gpcan2014/CAT001RS.HTM
 CA,2016,http://www.isuresults.com/results/season1516/gpcan2015/CAT001RS.HTM
 CA,2017,http://www.isuresults.com/results/season1617/gpcan2016/CAT001RS.HTM
 CA,2018,http://www.isuresults.com/results/season1718/gpcan2017/CAT001RS.HTM
+CA,2019,http://www.isuresults.com/results/season1819/gpcan2018/CAT001RS.HTM
+FR,2005,http://www.isuresults.com/results/gpfra04/CAT001RS.HTM
 FR,2006,http://www.isuresults.com/results/gpfra05/CAT001RS.HTM
 FR,2007,http://www.isuresults.com/results/gpfra06/CAT001RS.HTM
 FR,2008,http://www.isuresults.com/results/gpfra07/CAT001RS.HTM
@@ -38,6 +43,8 @@ FR,2015,http://www.isuresults.com/results/gpfra2014/CAT001RS.HTM
 FR,2016,http://www.isuresults.com/results/season1516/gpfra2015/CAT001RS.HTM
 FR,2017,http://www.isuresults.com/results/season1617/gpfra2016/CAT001RS.HTM
 FR,2018,http://www.isuresults.com/results/season1718/gpfra2017/CAT001RS.HTM
+FR,2019,http://www.isuresults.com/results/season1819/gpfra2018/CAT001RS.HTM
+RU,2005,http://www.isuresults.com/results/gprus04/CAT001RS.HTM
 RU,2006,http://www.isuresults.com/results/gprus05/CAT001RS.HTM
 RU,2007,http://www.isuresults.com/results/gprus06/CAT001RS.HTM
 RU,2008,http://www.isuresults.com/results/gprus07/CAT001RS.HTM
@@ -51,6 +58,8 @@ RU,2015,http://www.isuresults.com/results/gprus2014/CAT001RS.HTM
 RU,2016,http://www.isuresults.com/results/season1516/gprus2015/CAT001RS.HTM
 RU,2017,http://www.isuresults.com/results/season1617/gprus2016/CAT001RS.HTM
 RU,2018,http://www.isuresults.com/results/season1718/gprus2017/CAT001RS.HTM
+RU,2019,http://www.isuresults.com/results/season1819/gprus2018/CAT001RS.HTM
+CN,2005,http://www.isuresults.com/results/gpchn04/CAT001RS.HTM
 CN,2006,http://www.isuresults.com/results/gpchn05/CAT001RS.HTM
 CN,2007,http://www.isuresults.com/results/gpchn06/CAT001RS.HTM
 CN,2008,http://www.isuresults.com/results/gpchn07/CAT001RS.HTM
@@ -64,6 +73,7 @@ CN,2015,http://www.isuresults.com/results/gpchn2014/CAT001RS.HTM
 CN,2016,http://www.isuresults.com/results/season1516/gpchn2015/CAT001RS.HTM
 CN,2017,http://www.isuresults.com/results/season1617/gpchn2016/CAT001RS.HTM
 CN,2018,http://www.isuresults.com/results/season1718/gpchn2017/CAT001RS.HTM
+JP,2005,http://www.isuresults.com/results/gpjpn04/CAT001RS.HTM
 JP,2006,http://www.isuresults.com/results/gpjpn05/CAT001RS.HTM
 JP,2007,http://www.isuresults.com/results/gpjpn06/CAT001RS.HTM
 JP,2008,http://www.isuresults.com/results/gpjpn07/CAT001RS.HTM
@@ -77,6 +87,9 @@ JP,2015,http://www.isuresults.com/results/gpjpn2014/CAT001RS.HTM
 JP,2016,http://www.isuresults.com/results/season1516/gpjpn2015/CAT001RS.HTM
 JP,2017,http://www.isuresults.com/results/season1617/gpjpn2016/CAT001RS.HTM
 JP,2018,http://www.isuresults.com/results/season1718/gpjpn2017/data0190.htm
+JP,2019,http://www.isuresults.com/results/season1819/gpjpn2018/data0190.htm
+FI,2019,http://www.isuresults.com/results/season1819/gpfin2018/CAT001RS.HTM
+FN,2005,http://www.isuresults.com/results/gpf0405/CAT001RS.HTM
 FN,2006,http://www.isuresults.com/results/gpf0506/CAT001RS.HTM
 FN,2007,http://www.isuresults.com/results/gpf0607/CAT001RS.HTM
 FN,2008,http://www.isuresults.com/results/gpf0708/CAT001RS.HTM
@@ -90,6 +103,8 @@ FN,2015,http://www.isuresults.com/results/gpf1415/CAT001RS.HTM
 FN,2016,http://www.isuresults.com/results/season1516/gpf1516/CAT001RS.HTM
 FN,2017,http://www.isuresults.com/results/season1617/gpf1617/CAT001RS.HTM
 FN,2018,http://www.isuresults.com/results/season1718/gpf1718/data0190.htm
+FN,2019,http://www.isuresults.com/results/season1819/gpf1819/CAT001RS.HTM
+EU,2005,http://www.isuresults.com/results/ec2005/CAT001RS.HTM
 EU,2006,http://www.isuresults.com/results/ec2006/CAT001RS.HTM
 EU,2007,http://www.isuresults.com/results/ec2007/CAT001RS.HTM
 EU,2008,http://www.isuresults.com/results/ec2008/CAT001RS.HTM
@@ -103,6 +118,8 @@ EU,2015,http://www.isuresults.com/results/ec2015/CAT001RS.HTM
 EU,2016,http://www.isuresults.com/results/season1516/ec2016/CAT001RS.HTM
 EU,2017,http://www.isuresults.com/results/season1617/ec2017/CAT001RS.HTM
 EU,2018,http://www.isuresults.com/results/season1718/ec2018/CAT001RS.HTM
+EU,2019,http://www.isuresults.com/results/season1819/ec2019/CAT001RS.HTM
+4C,2005,http://www.isuresults.com/results/fc2005/CAT001RS.HTM
 4C,2006,http://www.isuresults.com/results/fc2006/CAT001RS.HTM
 4C,2007,http://www.isuresults.com/results/fc2007/CAT001RS.HTM
 4C,2008,http://www.isuresults.com/results/fc2008/CAT001RS.HTM
@@ -116,10 +133,12 @@ EU,2018,http://www.isuresults.com/results/season1718/ec2018/CAT001RS.HTM
 4C,2016,http://www.isuresults.com/results/season1516/fc2016/CAT001RS.HTM
 4C,2017,http://www.isuresults.com/results/season1617/fc2017/CAT001RS.HTM
 4C,2018,http://www.isuresults.com/results/season1718/fc2018/CAT001RS.HTM
+4C,2019,http://www.isuresults.com/results/season1819/fc2019/CAT001RS.HTM
 OL,2006,http://www.isuresults.com/results/owg2006/CAT001RS.HTM
 OL,2010,http://www.isuresults.com/results/owg2010/CAT001RS.HTM
 OL,2014,http://www.isuresults.com/results/owg2014/CAT001RS.HTM
 OL,2018,http://www.isuresults.com/results/season1718/owg2018/CAT001RS.HTM
+WR,2005,http://www.isuresults.com/results/wc2005/CAT001RS.HTM
 WR,2006,http://www.isuresults.com/results/wc2006/CAT001RS.HTM
 WR,2007,http://www.isuresults.com/results/wc2007/CAT001RS.HTM
 WR,2008,http://www.isuresults.com/results/wc2008/CAT001RS.HTM
