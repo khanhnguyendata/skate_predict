@@ -16,7 +16,7 @@ You can read about the result of the first part in my writeup on [Medium](https:
 The analyses for for part 1 of the are contained in the Juypter notebook ([analysis_part1](analysis_part1.ipynb)) in the root folder.
 
 Data from the project were scraped from the score websites of the International Skating Union (www.isuresults.com).
-The code used to scrap and clean the scores is found in the [data_processing](data_processing.ipnyb) notebook
+The code used to scrap and clean the scores is found in the [data_processing](data_processing.ipynb) notebook
 The cleaned scores are found in the [scores](scores) subfolder, and output visualizations in the [viz](viz) subfolder.
 
 For any question or feedback, please don't hesitate to contact me here or on Medium!
