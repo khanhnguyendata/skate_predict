@@ -3,6 +3,25 @@ import pandas as pd
 from itertools import combinations
 
 
+def train_test_split(scores, train_years, test_years):
+    ''' Take all scores (for either male and female) 
+    and split them into 4 different tables: 
+    1. Season scores for training years
+    2. World scores for training years
+    3. Season scores for testing years
+    4. World scores for testing years
+    '''
+    season_scores = scores.loc[scores['event']!='WR']
+    world_scores = scores.loc[scores['event']=='WR']
+    
+    season_train = season_scores.loc[season_scores['year'].isin(train_years)]
+    world_train = world_scores.loc[world_scores['year'].isin(train_years)]
+    season_test = season_scores.loc[season_scores['year'].isin(test_years)]
+    world_test = world_scores.loc[world_scores['year'].isin(test_years)]    
+    
+    return season_train, world_train, season_test, world_test
+
+
 def get_yearly_scores(year, season_scores, world_scores):
     '''
     From season and world scores over multiple years,
@@ -12,6 +31,42 @@ def get_yearly_scores(year, season_scores, world_scores):
     yearly_season_scores = season_scores.loc[season_scores['year']==year].copy()
     yearly_world_scores = world_scores.loc[world_scores['year']==year, ['name', 'score']].set_index('name').squeeze()
     return yearly_season_scores, yearly_world_scores
+    
+
+def return_ranking(skater_scores, world_scores):
+    '''
+    Return predicted ranking and world rankings (as lists)
+    from Series of corresponding scores.
+    The reason why both rankings are returned at once is because
+    not all skaters in the season will participate in the world championship,
+    and vice versa. Therefore, only skaters who participated in both
+    will be of interest.    
+    '''
+    skater_scores = skater_scores.sort_values(ascending=False)
+    world_scores = world_scores.sort_values(ascending=False)
+    skater_ranking = list(skater_scores.index.intersection(world_scores.index))
+    world_ranking = list(world_scores.index.intersection(skater_scores.index))
+    return skater_ranking, world_ranking
+
+
+def calculate_kendall_tau(skater_ranking, world_ranking, verbose=True):
+    '''
+    Caluculate kendall's tau from two ranking lists of the same size
+    '''
+    # Generate set of ordered pairs from each ranking
+    skater_pairs = set(combinations(skater_ranking, 2))
+    world_pairs = set(combinations(world_ranking, 2))
+    
+    # Calculate number of total, concordant & discordant pairs and tau
+    n_pairs = len(skater_pairs)
+    n_concordant_pairs = len(skater_pairs & world_pairs)
+    
+    if verbose:
+        print(f'There are {n_concordant_pairs} concordant_pairs out of {n_pairs} pairs')
+        
+    # Calculate Kendall's tau from pair counts
+    tau = (2 * n_concordant_pairs - n_pairs) / n_pairs
+    return tau 
 
 
 class Model:
