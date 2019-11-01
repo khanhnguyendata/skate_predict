@@ -71,7 +71,7 @@ def calculate_kendall_tau(skater_ranking, world_ranking, verbose=True):
     return tau 
 
 
-def plot_multiple_rankings(ax, rankings, labels, filepath=None, xfontsize=None, zorder=None):
+def plot_multiple_rankings(fig, ax, rankings, labels, filepath=None, xfontsize=None, zorder=None):
     # Take multiple rankings as sorted list and plot them together (extension of plot_ranking)  
     cmap = mpl.cm.get_cmap('winter')
 
