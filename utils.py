@@ -117,6 +117,11 @@ def plot_multiple_rankings(fig, ax, rankings, labels, filepath=None, xfontsize=N
         fig.savefig(filepath)
 
 
+def calculate_rmse(predicted_scores, true_scores):
+    squared_errors = (predicted_scores - true_scores)**2
+    rmse = np.sqrt(squared_errors.mean())
+    return rmse
+
 
 class Model:
     def __init__(self):
@@ -124,9 +129,16 @@ class Model:
         self.model_ranking = None
         self.world_ranking = None
         self.predicted_season_scores = None
+
+    def fit(self, season_scores):
+        raise NotImplementedError('Must be overridden by specific fit method')
+
+    def predict(self, season_scores):
+        raise NotImplementedError('Must be overridden by specific predict method')
     
     def evaluate_rmse(self, season_scores):
-        squared_errors = (season_scores['score'].values - self.predicted_season_scores)**2
+        predicted_scores = self.predict(season_scores)
+        squared_errors = (season_scores['score'].values - predicted_scores)**2
         rmse = np.sqrt(squared_errors.mean())
         return rmse
     
@@ -137,8 +149,7 @@ class Model:
         world_ranking = list(world_scores.index.intersection(skater_scores.index))
         return skater_ranking, world_ranking
         
-    def evaluate_kendall_tau(self, world_scores, verbose=True):         
-        skater_scores = self.skater_scores.squeeze()
+    def evaluate_kendall_tau(self, world_scores, verbose=True):
         self.model_ranking, self.world_ranking = self.return_ranking(world_scores)
         
         skater_pairs = set(combinations(self.model_ranking, 2))
@@ -171,23 +182,19 @@ class Model:
 
 class AverageScore(Model):
     def __init__(self):
-        super().__init__()
-        
-    def predict_season_scores(self, season_scores):
-        self.predicted_season_scores = self.skater_scores.loc[season_scores['name']].values
+        super().__init__()    
     
     def fit(self, season_scores):
         self.skater_scores = season_scores.groupby('name')['score'].mean()
         self.skater_scores.sort_values(ascending=False, inplace=True)
-        self.predict_season_scores(season_scores)        
+
+    def predict(self, season_scores):
+        return self.skater_scores.loc[season_scores['name']].values
 
 
 class NormedAverageScore(Model):
     def __init__(self):
         super().__init__()
-    
-    def predict_season_scores(self, season_scores, event_stds, event_means):
-        self.predicted_season_scores = (self.skater_scores.loc[season_scores['name']] * event_stds + event_means).values
         
     def fit(self, season_scores):
         season_scores = season_scores.copy()
@@ -196,9 +203,10 @@ class NormedAverageScore(Model):
         season_scores['score_normed'] = (season_scores['score'] - event_means) / event_stds
         
         self.skater_scores = season_scores.groupby('name')['score_normed'].mean()
-        self.skater_scores.sort_values(ascending=False, inplace=True)
-        
-        self.predict_season_scores(season_scores, event_stds, event_means)        
+        self.skater_scores.sort_values(ascending=False, inplace=True)   
+
+    def predict(self, season_scores, event_stds, event_means):
+        return (self.skater_scores.loc[season_scores['name']] * event_stds + event_means).values
 
 
 class Linear(Model):
@@ -213,11 +221,6 @@ class Linear(Model):
         L[0, 0] = 0
         coefs = np.linalg.inv(X.T @ X + self.lambda_reg * L) @ (X.T @ y)
         return coefs
-    
-    def predict_season_scores(self, season_scores):
-        broadcasted_skater_scores = self.skater_scores.loc[season_scores['name']].values
-        broadcasted_event_scores = self.event_scores.loc[season_scores['event']].values
-        self.predicted_season_scores = broadcasted_skater_scores + broadcasted_event_scores + self.baseline
         
     def fit(self, season_scores):
         dummies = pd.get_dummies(season_scores[['name', 'event']], prefix=['', ''], prefix_sep='', drop_first=True)
@@ -243,9 +246,13 @@ class Linear(Model):
         self.event_scores[dropped_event] = 0
         
         self.skater_scores.sort_values(ascending=False, inplace=True)
-        self.event_scores.sort_values(ascending=False, inplace=True)        
-        
-        self.predict_season_scores(season_scores)
+        self.event_scores.sort_values(ascending=False, inplace=True)
+
+    def predict(self, season_scores):
+        broadcasted_skater_scores = self.skater_scores.loc[season_scores['name']].values
+        broadcasted_event_scores = self.event_scores.loc[season_scores['event']].values
+        return broadcasted_skater_scores + broadcasted_event_scores + self.baseline
+
 
 
 class LogLinear(Linear):
@@ -258,8 +265,7 @@ class LogLinear(Linear):
         coefs = np.linalg.inv(X.T @ X + self.lambda_reg * L) @ (X.T @ np.log(y))
         return coefs
     
-    def predict_season_scores(self, season_scores):
+    def predict(self, season_scores):
         broadcasted_skater_scores = self.skater_scores.loc[season_scores['name']].values
         broadcasted_event_scores = self.event_scores.loc[season_scores['event']].values
-        self.log_predicted_season_scores = broadcasted_skater_scores + broadcasted_event_scores + self.baseline
-        self.predicted_season_scores = np.exp(self.log_predicted_season_scores)
+        return np.exp(broadcasted_skater_scores + broadcasted_event_scores + self.baseline)
