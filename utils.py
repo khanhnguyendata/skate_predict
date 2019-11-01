@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 from itertools import combinations
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 
 def train_test_split(scores, train_years, test_years):
@@ -31,7 +33,7 @@ def get_yearly_scores(year, season_scores, world_scores):
     yearly_season_scores = season_scores.loc[season_scores['year']==year].copy()
     yearly_world_scores = world_scores.loc[world_scores['year']==year, ['name', 'score']].set_index('name').squeeze()
     return yearly_season_scores, yearly_world_scores
-    
+
 
 def return_ranking(skater_scores, world_scores):
     '''
@@ -67,6 +69,53 @@ def calculate_kendall_tau(skater_ranking, world_ranking, verbose=True):
     # Calculate Kendall's tau from pair counts
     tau = (2 * n_concordant_pairs - n_pairs) / n_pairs
     return tau 
+
+
+def plot_multiple_rankings(ax, rankings, labels, filepath=None, xfontsize=None, zorder=None):
+    # Take multiple rankings as sorted list and plot them together (extension of plot_ranking)  
+    cmap = mpl.cm.get_cmap('winter')
+
+    last_ranking = rankings[-1]
+    first_ranking = rankings[0]
+    n_skaters = len(last_ranking)
+    
+    for index, skater in enumerate(last_ranking):
+        # Get y-position (index), rank and color of each skater in last ranking in the list (usually worlds)
+        last_rank = index + 1
+        last_index = n_skaters - last_rank
+        avg_color = cmap(last_rank/(n_skaters*1.1))
+        
+        # Get index and rank for this skater in first ranking (usually that of the current model)
+        first_rank = first_ranking.index(skater) + 1
+        first_index = n_skaters - first_rank
+        
+        # Get y-positions and rank for this skater for first to second-to-last rankings (to plot connecting lines)
+        indicies = []        
+        for ranking in rankings[:-1]: 
+            subsequent_rank = ranking.index(skater) + 1
+            subsequent_index = n_skaters - subsequent_rank
+            indicies.append(subsequent_index)
+            
+        indicies.append(last_index)
+
+        # Plot connecting lines between two rankings
+        ax.plot(np.arange(len(rankings)), indicies,
+                'o-', color=avg_color, zorder=zorder)
+
+        # Plot text on both sides
+        ax.text(-0.1, first_index, f'{skater} {first_rank}', ha='right', va='center', color=avg_color)
+        ax.text(len(rankings)-0.9, last_index, f'{last_rank} {skater}', ha='left', va='center', color=avg_color)
+        
+
+    ax.set_xlim(-1, len(rankings))
+    ax.set_xticks(np.arange(len(rankings)))
+    ax.set_xticklabels(labels, fontsize=xfontsize)
+    ax.set_yticks([])
+    plt.tight_layout()
+    
+    if filepath:
+        fig.savefig(filepath)
+
 
 
 class Model:
