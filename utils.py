@@ -51,7 +51,7 @@ def return_ranking(skater_scores, world_scores):
     return skater_ranking, world_ranking
 
 
-def calculate_kendall_tau(skater_ranking, world_ranking, verbose=True):
+def calculate_kendall_tau(skater_ranking, world_ranking, verbose=True, return_pairs=False):
     '''
     Caluculate kendall's tau from two ranking lists of the same size
     '''
@@ -68,7 +68,10 @@ def calculate_kendall_tau(skater_ranking, world_ranking, verbose=True):
         
     # Calculate Kendall's tau from pair counts
     tau = (2 * n_concordant_pairs - n_pairs) / n_pairs
-    return tau 
+    if return_pairs:
+        return tau, n_concordant_pairs, n_pairs
+    else:
+        return tau 
 
 
 def plot_multiple_rankings(fig, ax, rankings, labels, filepath=None, xfontsize=None, zorder=None):
