@@ -17,7 +17,7 @@ The project is split over two parts::
 ![Ranking comparisons](viz/rank_mul_add_world.png)
 
 * Part 2: hybrid models learned by gradient descent, with model penalization and early stopping ([analysis](analysis_part2.ipynb), [write-up](https://medium.com/@seismatica/predicting-figure-skating-world-championship-ranking-from-season-performances-part-2-hybrid-7d296747b15))
-![Gradient descent animation](viz/rank_mul_add_world.png)
+![Gradient descent animation](viz/batch_anim_cropped.gif)
 
 Data from the project were scraped from the score websites of the International Skating Union (www.isuresults.com).
 The code used to scrap and clean the scores is found in the [data_processing](data_processing.ipynb) notebook
