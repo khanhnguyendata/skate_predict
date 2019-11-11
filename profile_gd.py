@@ -1,5 +1,4 @@
 import numpy as np
-# from memory_profiler import profile
 
 
 @profile
@@ -17,11 +16,11 @@ def naive_gradient_descent(residuals, n_factors):
         skater_scores_k = skater_scores[:, [k]]
         event_scores_k = event_scores[[k], :]
         
-        event_gradients = np.nansum(residuals * skater_scores_k, axis=0, keepdims=True)
-        skater_gradients = np.nansum(residuals * event_scores_k, axis=1, keepdims=True)    
+        event_gradients_k = np.nansum(residuals * skater_scores_k, axis=0, keepdims=True)
+        skater_gradients_k = np.nansum(residuals * event_scores_k, axis=1, keepdims=True)    
                 
-        event_scores[[k], :] = event_scores_k - alpha * event_gradients
-        skater_scores[:, [k]] = skater_scores_k - alpha * skater_gradients
+        event_scores[[k], :] = event_scores_k - alpha * event_gradients_k
+        skater_scores[:, [k]] = skater_scores_k - alpha * skater_gradients_k
     
     return baseline, event_scores, skater_scores
 
