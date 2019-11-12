@@ -2,49 +2,72 @@ import numpy as np
 
 
 @profile
-def naive_gradient_descent(residuals, n_factors):
+def naive_gradient_descent(true_scores, n_iter, n_factors):
+    # Initialize baseline score, and scores of all latent factors
+    alpha = 0.0005
     random_state = np.random.RandomState(seed=42)
-    baseline = random_state.random_sample()
-    skater_scores = random_state.random_sample((residuals.shape[0], n_factors))
-    event_scores = random_state.random_sample((n_factors, residuals.shape[1]))
-    
-    alpha = 0.0005  
-    baseline_gradient = np.nansum(residuals)
-    baseline = baseline - alpha * baseline_gradient    
-      
-    for k in range(n_factors):
-        skater_scores_k = skater_scores[:, [k]]
-        event_scores_k = event_scores[[k], :]
-        
-        event_gradients_k = np.nansum(residuals * skater_scores_k, axis=0, keepdims=True)
-        skater_gradients_k = np.nansum(residuals * event_scores_k, axis=1, keepdims=True)    
-                
-        event_scores[[k], :] = event_scores_k - alpha * event_gradients_k
-        skater_scores[:, [k]] = skater_scores_k - alpha * skater_gradients_k
-    
+    baseline = random_state.random_sample()    
+    event_scores = random_state.random_sample((n_factors, true_scores.shape[1]))
+    skater_scores = random_state.random_sample((true_scores.shape[0], n_factors))
+
+
+    # Step 2: repeat until convergence
+    for i in range(n_iter):
+        # a. Calculate residual for every event-skater pair
+        predicted_scores = skater_scores @ event_scores + baseline
+        residuals = predicted_scores - true_scores
+
+        # b. Calculate baseline gradient and update baseline score
+        baseline_gradient = np.nansum(residuals)
+        baseline = baseline - alpha * baseline_gradient
+
+        # c. For each factor k
+        for k in range(n_factors):
+            # i. Calculate gradients for each factor
+            skater_scores_k = skater_scores[:, [k]]
+            event_scores_k = event_scores[[k], :]
+
+            event_gradients_k = np.nansum(residuals * skater_scores_k, axis=0, keepdims=True)
+            skater_gradients_k = np.nansum(residuals * event_scores_k, axis=1, keepdims=True)
+
+            # ii. Update scores for each factor
+            event_scores[[k], :] = event_scores_k - alpha * event_gradients_k
+            skater_scores[:, [k]] = skater_scores_k - alpha * skater_gradients_k
+
     return baseline, event_scores, skater_scores
 
+
 @profile
-def broadcast_gradient_descent(residuals, n_factors):    
+def broadcast_gradient_descent(true_scores, n_iter, n_factors):
+    # Initialize baseline score, and scores of all latent factors
+    alpha = 0.0005
     random_state = np.random.RandomState(seed=42)
     baseline = random_state.random_sample()
-    skater_scores = random_state.random_sample((residuals.shape[0], n_factors))
-    event_scores = random_state.random_sample((n_factors, residuals.shape[1]))
-    
-    alpha = 0.0005
-    baseline_gradient = np.nansum(residuals)
-    baseline = baseline - alpha * baseline_gradient
-    
-    event_gradients = np.nansum(residuals[:, np.newaxis, :] * skater_scores[:, :, np.newaxis], axis=0)
-    skater_gradients = np.nansum(residuals[:, np.newaxis, :] * event_scores[np.newaxis, :, :], axis=-1)
-    
-    event_scores = event_scores - alpha * event_gradients
-    skater_scores = skater_scores - alpha * skater_gradients
-    
+    event_scores = random_state.random_sample((n_factors, true_scores.shape[1]))
+    skater_scores = random_state.random_sample((true_scores.shape[0], n_factors))
+
+    # Step 2: repeat until convergence
+    for i in range(n_iter):
+        # a. Calculate residual for every event-skater pair
+        predicted_scores = skater_scores @ event_scores + baseline
+        residuals = predicted_scores - true_scores
+
+        # b. Calculate baseline gradient and update baseline score
+        baseline_gradient = np.nansum(residuals)
+        baseline = baseline - alpha * baseline_gradient
+
+        # c. Calculate gradient and update scores for all factors
+        residuals = residuals[np.newaxis, :, :]
+        event_gradients = np.nansum(residuals * skater_scores.T[:, :, np.newaxis], axis=1)
+        skater_gradients = np.nansum(residuals * event_scores[:, np.newaxis, :], axis=2).T
+
+        event_scores = event_scores - alpha * event_gradients
+        skater_scores = skater_scores - alpha * skater_gradients
+
     return baseline, event_scores, skater_scores
 
 
 if __name__ == '__main__':
-    residuals = np.load('viz/residuals.npy')
-    naive_gradient_descent(residuals, 100000)
-    broadcast_gradient_descent(residuals, 100000)
+    true_scores = np.load('viz/true_scores_2017.npy')
+    naive_gradient_descent(true_scores, 1000, 100)
+    broadcast_gradient_descent(true_scores, 1000, 100)
