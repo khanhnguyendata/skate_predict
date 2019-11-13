@@ -57,9 +57,11 @@ def broadcast_gradient_descent(true_scores, n_iter, n_factors):
         baseline = baseline - alpha * baseline_gradient
 
         # c. Calculate gradient and update scores for all factors
-        residuals = residuals[np.newaxis, :, :]
-        event_gradients = np.nansum(residuals * skater_scores.T[:, :, np.newaxis], axis=1)
-        skater_gradients = np.nansum(residuals * event_scores[:, np.newaxis, :], axis=2).T
+        reshaped_residuals = residuals[np.newaxis, :, :]
+        reshaped_event_scores = event_scores[:, np.newaxis, :]
+        reshaped_skater_scores = skater_scores.T[:, :, np.newaxis]
+        event_gradients = np.nansum(residuals * reshaped_skater_scores, axis=1)
+        skater_gradients = np.nansum(residuals * reshaped_event_scores, axis=2).T
 
         event_scores = event_scores - alpha * event_gradients
         skater_scores = skater_scores - alpha * skater_gradients
@@ -68,6 +70,6 @@ def broadcast_gradient_descent(true_scores, n_iter, n_factors):
 
 
 if __name__ == '__main__':
-    true_scores = np.load('viz/true_scores_2017.npy')
-    naive_gradient_descent(true_scores, 1000, 100)
-    broadcast_gradient_descent(true_scores, 1000, 100)
+    true_scores = np.load('viz/true_scores.npy')
+    naive_gradient_descent(true_scores, 1, 100000)
+    broadcast_gradient_descent(true_scores, 1, 100000)
