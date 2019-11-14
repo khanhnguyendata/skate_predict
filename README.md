@@ -22,7 +22,7 @@ The project consists of multiple parts:
 * **Part 3:** multi-factor model learned by gradient descent ([analysis](analysis_part3.ipynb), [write-up](https://medium.com/@seismatica/predict-figure-skating-world-championship-ranking-from-season-performances-8af099351e9c?source=friends_link&sk=48c2971de1a7aa77352eb96eec77f249))
 ![Gradient descent animation](viz/batch_anim_multi_cropped.gif)
 
-* **Part 4:** combine multi latent factors to rank skaters (coming soon)
+* **Part 4:** combine multiple latent factors to rank skaters (coming soon)
 
 Data from the project were scraped from the score websites of the International Skating Union (www.isuresults.com).
 The code used to scrap and clean the scores is found in the [data_processing](data_processing.ipynb) notebook
