@@ -168,21 +168,15 @@ def train_multi_log(season_scores, skater_order=None, init_seed=42,
         # b. Calculate baseline gradient and update baseline score
         baseline_gradient = np.nansum(residuals)
         baseline = baseline - alpha * baseline_gradient
-    
-        # Reshaped matrices
-        reshaped_residuals = residuals[np.newaxis, :, :]
-        reshaped_event_scores = event_scores[:, np.newaxis, :]
-        reshaped_skater_scores = skater_scores.T[:, :, np.newaxis]
-        
-        
+            
         # c-i: Calculate gradients for all factors
-        residuals = residuals[np.newaxis, :, :]
-        event_gradients = np.nansum(residuals * skater_scores.T[:, :, np.newaxis], axis=1)
-        skater_gradients = np.nansum(residuals * event_scores[:, np.newaxis, :], axis=2)
+        residuals = np.nan_to_num(residuals)
+        event_gradients = skater_scores.T @ residuals
+        skater_gradients = residuals @ event_scores.T
         
-        # 2c-ii: Update latent scores for all factors
+        # c-ii: Update latent scores for all factors
         event_scores = event_scores - alpha * event_gradients
-        skater_scores = skater_scores - alpha * skater_gradients.T
+        skater_scores = skater_scores - alpha * skater_gradients
     
         if verbose and i==(n_iter-1):
             rmse_old = np.sqrt(np.nanmean(residuals**2))

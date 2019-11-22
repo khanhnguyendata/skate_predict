@@ -93,12 +93,13 @@ def matmul_gradient_descent(true_scores, n_iter, n_factors):
         residuals = np.nan_to_num(residuals)
 
         # 2c-i: Calculate gradients for all factors
-        event_gradients = skater_scores.T @ np.nan_to_num(residuals)
-        skater_gradients = np.nan_to_num(residuals) @ event_scores.T
+        event_gradients = skater_scores.T @ residuals
+        skater_gradients = residuals @ event_scores.T
 
         # 2c-ii: Update latent scores for all factors
         event_scores = event_scores - alpha * event_gradients
         skater_scores = skater_scores - alpha * skater_gradients
+
     return baseline, event_scores, skater_scores
 
 
