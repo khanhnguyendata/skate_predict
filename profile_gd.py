@@ -69,7 +69,41 @@ def broadcast_gradient_descent(true_scores, n_iter, n_factors):
     return baseline, event_scores, skater_scores
 
 
+@profile
+def matmul_gradient_descent(true_scores, n_iter, n_factors):
+    alpha = 0.0005
+    
+    # Initialize baseline score, and scores of all latent factors
+    random_state = np.random.RandomState(seed=42)
+    baseline = random_state.random_sample()
+    event_scores = random_state.random_sample((n_factors, true_scores.shape[1]))
+    skater_scores = random_state.random_sample((true_scores.shape[0], n_factors))
+
+    # Step 2: repeat until convergence
+    for i in range(n_iter):
+        # a. Calculate residual for every event-skater pair
+        predicted_scores = skater_scores @ event_scores + baseline
+        residuals = predicted_scores - true_scores
+
+        # b. Calculate baseline gradient and update baseline score
+        baseline_gradient = np.nansum(residuals)
+        baseline = baseline - alpha * baseline_gradient
+
+        # c. Calculate gradient and update scores for all factors
+        residuals = np.nan_to_num(residuals)
+
+        # 2c-i: Calculate gradients for all factors
+        event_gradients = skater_scores.T @ np.nan_to_num(residuals)
+        skater_gradients = np.nan_to_num(residuals) @ event_scores.T
+
+        # 2c-ii: Update latent scores for all factors
+        event_scores = event_scores - alpha * event_gradients
+        skater_scores = skater_scores - alpha * skater_gradients
+    return baseline, event_scores, skater_scores
+
+
 if __name__ == '__main__':
     true_scores = np.load('viz/true_scores.npy')
     naive_gradient_descent(true_scores, 1, 100000)
     broadcast_gradient_descent(true_scores, 1, 100000)
+    matmul_gradient_descent(true_scores, 1, 100000)
