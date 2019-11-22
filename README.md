@@ -25,6 +25,9 @@ The project consists of multiple parts:
 * **Part 4:** combine multiple latent factors to rank skaters using logistic regression ([analysis](analysis_part4.ipynb), [write-up](https://medium.com/@seismatica/predict-figure-skating-world-championship-ranking-from-season-performances-a4771f2460d2))
 ![Gradient ascent animation](viz/log_anim_50.gif)
 
+* **Part 5:** train latent factors in sequence instead of all at once ([analysis](analysis_part5.ipynb), [write-up](https://medium.com/@seismatica/predict-figure-skating-world-championship-ranking-from-season-performances-7461dc5c0722?source=friends_link&sk=fcf7e410d33925363d0bbbcf59130ade))
+![](viz/seq_anim_cropped.gif)
+
 Data from the project were scraped from the score websites of the International Skating Union (www.isuresults.com).
 The code used to scrap and clean the scores is found in the [data_processing](data_processing.ipynb) notebook
 The cleaned scores are found in the [scores](scores) subfolder, and output visualizations in the [viz](viz) subfolder.
