@@ -126,6 +126,164 @@ def calculate_rmse(predicted_scores, true_scores):
     return rmse
 
 
+def train_multi_log(season_scores, skater_order=None, init_seed=42,
+             alpha=0.0005, n_iter=1000, n_factors=2, log_every=10, additional_iter=[], verbose=True):
+    '''
+    Run gradient descent on some season scores table (long format)
+    Generate latent scores and other intermediate values at certain iterations'''
+    
+    # Convert long table to pivot table
+    season_pivot = pd.pivot_table(season_scores[['name', 'event', 'score']], values='score', index='name', columns='event')
+    
+    # Modify skater position in pivot table (for aesthetic value only)
+    if skater_order is not None:
+        season_pivot = season_pivot.loc[skater_order]
+        
+    # Store skater and event names to retrieve later
+    skater_names = list(season_pivot.index)
+    event_names = list(season_pivot.columns)
+    
+    # Convert pivot table to numpy array
+    true_scores = season_pivot.values
+
+    # Step 1: Initialize baseline score, and scores of all factors
+    random_state = np.random.RandomState(init_seed)
+    baseline = random_state.random_sample()   
+    event_scores = random_state.random_sample((n_factors, len(event_names)))
+    skater_scores = random_state.random_sample((len(skater_names), n_factors))        
+
+    
+    # Step 2: repeat until convergence
+    for i in range(n_iter):
+        # a. Calculate residual for every event-skater pair
+        predicted_scores = skater_scores @ event_scores + baseline
+        residuals = predicted_scores - true_scores
+            
+        
+        # Log intermediate values at certain iterations if logging is enabled
+        if (i%log_every==0) or (i in additional_iter) or (i==n_iter-1):
+            rmse = np.sqrt(np.nanmean(residuals**2))
+            yield i, true_scores, event_names, skater_names, baseline, event_scores, skater_scores, residuals, rmse
+
+        # b. Calculate baseline gradient and update baseline score
+        baseline_gradient = np.nansum(residuals)
+        baseline = baseline - alpha * baseline_gradient
+    
+        # Reshaped matrices
+        reshaped_residuals = residuals[np.newaxis, :, :]
+        reshaped_event_scores = event_scores[:, np.newaxis, :]
+        reshaped_skater_scores = skater_scores.T[:, :, np.newaxis]
+        
+        
+        # c-i: Calculate gradients for all factors
+        residuals = residuals[np.newaxis, :, :]
+        event_gradients = np.nansum(residuals * skater_scores.T[:, :, np.newaxis], axis=1)
+        skater_gradients = np.nansum(residuals * event_scores[:, np.newaxis, :], axis=2)
+        
+        # 2c-ii: Update latent scores for all factors
+        event_scores = event_scores - alpha * event_gradients
+        skater_scores = skater_scores - alpha * skater_gradients.T
+    
+        if verbose and i==(n_iter-1):
+            rmse_old = np.sqrt(np.nanmean(residuals**2))
+            residuals = skater_scores @ event_scores + baseline - true_scores
+            rmse_new = np.sqrt(np.nanmean(residuals**2))
+            print(f'Alpha: {alpha}, Iter: {i}, Last RMSE: {round(rmse_new, 2)}, Delta RMSE: {round(rmse_new - rmse_old, 10)}')
+
+
+def train_multi(season_scores, **kwargs):
+    '''
+    Run gradient descent on some season scores table (long format)
+    Return latent scores at the end of algorithms
+    '''
+    log_values = None
+    for log_values in train_multi_log(season_scores, **kwargs):
+        pass
+    
+    event_names = log_values[2]
+    skater_names = log_values[3]
+    baseline = log_values[4]
+    event_scores = log_values[5]
+    skater_scores = log_values[6]
+    
+    event_scores = pd.DataFrame(event_scores.T, index=event_names)
+    skater_scores = pd.DataFrame(skater_scores, index=skater_names) 
+    
+    return baseline, event_scores, skater_scores    
+
+
+def log_gradient_ascent_log(X, alpha=0.001, n_iter=1000, seed=42, log_every=10, additional_iter=[], verbose=True):
+    '''
+    Train logistic regression model on predictor matrix
+    Yield model coefficients and other information at specified iteration
+    '''
+    beta = np.full(X.shape[1], 0.5)
+    ll_log = []
+    
+    if n_iter == 0:
+        yield 0, beta, None
+    
+    for i in range(n_iter):
+        prob = 1 / (1 + np.exp(-X @ beta))
+        ll_avg = np.log(prob).sum() / len(X) 
+       
+        # Log values before update
+        if (i%log_every==0) or (i in additional_iter) or (i==n_iter-1):
+            yield i, beta, ll_avg
+        
+        gradient = (1 - prob) @ X
+        beta = beta + alpha * gradient
+        
+        if verbose and i in [n_iter-1]:
+            prob_new = 1 / (1 + np.exp(-X @ beta))
+            ll_avg_new = np.log(prob_new).sum() / len(X)
+            print(f'Alpha: {alpha}, Iter: {i}, Last LL: {round(ll_avg_new, 2)}, Delta LL: {round(ll_avg_new - ll_avg, 10)}')
+
+
+def log_gradient_ascent(X, **kwargs):
+    '''
+    Train logistic regression model on predictor matrix
+    Return model coefficient at the end
+    '''
+    log_values = None
+    for log_values in log_gradient_ascent_log(X, **kwargs):
+        pass
+    
+    last_beta = log_values[1]
+    return last_beta    
+
+
+def convert_to_ranking(y_pred, world_ranking):
+    '''
+    Convert binary response to pairwise ranking, along with a reference world ranking
+    Return predicted ranking with the same length as the world ranking
+    '''
+    n_skaters = len(world_ranking)
+    counter = [0] * n_skaters
+    index_pairs = combinations(range(n_skaters), 2)
+    for y, (i, j) in zip(y_pred, index_pairs):
+        if y == True:
+            counter[i] += 1
+        else:
+            counter[j] += 1
+            
+    predicted_ranking = [skater for rank, skater in sorted(zip(counter, world_ranking), reverse=True)]
+    
+    return predicted_ranking
+
+
+def get_tau_from_X_beta(X, beta, verbose=False):
+    '''
+    Get Kendall's tau from predictor matrix and model coefficient
+    by counting concordant pairs in predicted binary response
+    '''
+    n_concordant_pairs = (X @ beta > 0).sum()
+    n_pairs = len(X)
+    if verbose:
+        print(f'There are {n_concordant_pairs} concordant_pairs out of {n_pairs} pairs')
+    return (2 * n_concordant_pairs - n_pairs) / n_pairs
+
+
 class Model:
     def __init__(self):
         self.skater_scores = None
