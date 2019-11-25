@@ -1281,7 +1281,7 @@ name,year,event,score
 "Michael Christian, MARTINEZ",2013,4C,178.08
 "June Hyoung, LEE",2013,4C,176.39
 "Elladj, BALDE",2013,4C,176.33
-"Jinseo, KIM",2013,4C,171.01
+"Jin Seo, KIM",2013,4C,171.01
 "Min-Seok, KIM",2013,4C,137.63
 "Brendan, KERRY",2013,4C,134.26
 "Jordan, JU",2013,4C,121.11
@@ -1455,7 +1455,7 @@ name,year,event,score
 "Ivan, RIGHINI",2014,WR,213.09
 "Peter, LIEBERS",2014,WR,211.92
 "Alexei, BYCHENKO",2014,WR,211.24
-"Jinseo, KIM",2014,WR,202.8
+"Jin Seo, KIM",2014,WR,202.8
 "Jorik, HENDRICKX",2014,WR,196.78
 "Elladj, BALDE",2014,WR,195.39
 "Christopher, CALUZA",2014,WR,193.23
@@ -1516,7 +1516,7 @@ name,year,event,score
 "Han, YAN",2015,CN,206.65
 "Alexei, BYCHENKO",2015,CN,204.15
 "Keiji, TANAKA",2015,CN,189.26
-"Jinseo, KIM",2015,CN,183.46
+"Jin Seo, KIM",2015,CN,183.46
 "Yuhang, GUAN",2015,CN,177.66
 "Yi, WANG",2015,CN,160.92
 "Daisuke, MURAKAMI",2015,JP,246.07
@@ -1527,7 +1527,7 @@ name,year,event,score
 "Elladj, BALDE",2015,JP,212.5
 "Ross, MINER",2015,JP,205.36
 "Jeremy, TEN",2015,JP,203.27
-"Jinseo, KIM",2015,JP,197.2
+"Jin Seo, KIM",2015,JP,197.2
 "Ivan, RIGHINI",2015,JP,196.22
 "Joshua, FARRIS",2015,JP,169.88
 "Yuzuru, HANYU",2015,FN,288.16
@@ -1573,7 +1573,7 @@ name,year,event,score
 "Jeremy, TEN",2015,4C,207.75
 "Ronald, LAM",2015,4C,202.81
 "Liam, FIRUS",2015,4C,199.81
-"Jinseo, KIM",2015,4C,199.64
+"Jin Seo, KIM",2015,4C,199.64
 "Denis, MARGALIK",2015,4C,191.25
 "Brendan, KERRY",2015,4C,181.25
 "June Hyoung, LEE",2015,4C,180.06
@@ -1627,7 +1627,7 @@ name,year,event,score
 "Alexander, PETROV",2016,CA,221.02
 "Timothy, DOLENSKY",2016,CA,219.06
 "Michal, BREZINA",2016,CA,218.58
-"Jinseo, KIM",2016,CA,195.84
+"Jin Seo, KIM",2016,CA,195.84
 "Sei, KAWAHARA",2016,CA,195.21
 "Keegan, MESSING",2016,CA,182.25
 "June Hyoung, LEE",2016,CA,152.05
@@ -1704,7 +1704,7 @@ name,year,event,score
 "Max, AARON",2016,4C,220.94
 "Grant, HOCHSTEIN",2016,4C,216.34
 "Michael Christian, MARTINEZ",2016,4C,211.59
-"Jinseo, KIM",2016,4C,201.43
+"Jin Seo, KIM",2016,4C,201.43
 "Kevin, REYNOLDS",2016,4C,198.87
 "Nan, SONG",2016,4C,194.81
 "Liam, FIRUS",2016,4C,194.02
@@ -1859,7 +1859,7 @@ name,year,event,score
 "Chih-I, TSAO",2017,4C,169.63
 "Andrew, DODDS",2017,4C,162.05
 "Mark, WEBSTER",2017,4C,160.03
-"Leslie, IP",2017,4C,146.74
+"Leslie Man Cheuk, IP",2017,4C,146.74
 "Kai Xiang, CHEW",2017,4C,138.46
 "Micah, TANG",2017,4C,135.79
 "Yuzuru, HANYU",2017,WR,321.59
@@ -1904,7 +1904,7 @@ name,year,event,score
 "Michal, BREZINA",2018,CA,237.04
 "Nicolas, NADEAU",2018,CA,229.43
 "Keegan, MESSING",2018,CA,217.75
-"Junhwan, CHA",2018,CA,210.32
+"Jun Hwan, CHA",2018,CA,210.32
 "Paul, FENTZ",2018,CA,201.6
 "Brendan, KERRY",2018,CA,201.56
 "Takahito, MURA",2018,CA,186.66
@@ -2007,7 +2007,7 @@ name,year,event,score
 "Andrew, DODDS",2018,4C,177.81
 "Sihyeong, LEE",2018,4C,177.07
 "Abzal, RAKIMGALIEV",2018,4C,175.58
-"Leslie, IP",2018,4C,150.23
+"Leslie Man Cheuk, IP",2018,4C,150.23
 "Yuzuru, HANYU",2018,OL,317.85
 "Shoma, UNO",2018,OL,306.9
 "Javier, FERNANDEZ",2018,OL,305.24
@@ -2031,7 +2031,7 @@ name,year,event,score
 "Matteo, RIZZO",2018,OL,232.41
 "Paul, FENTZ",2018,OL,214.55
 "Han, YAN",2018,OL,213.01
-"Moris, KVITELASHVILI",2018,OL,204.57
+"Morisi, KVITELASHVILI",2018,OL,204.57
 "Nathan, CHEN",2018,WR,321.4
 "Shoma, UNO",2018,WR,273.77
 "Mikhail, KOLYADA",2018,WR,272.32
@@ -2063,7 +2063,7 @@ name,year,event,score
 "Vincent, ZHOU",2019,US,225.75
 "Nam, NGUYEN",2019,US,212.99
 "Julian Zhi Jie, YEE",2019,US,207.51
-"Moris, KVITELASHVILI",2019,US,205.12
+"Morisi, KVITELASHVILI",2019,US,205.12
 "Alexei, BYCHENKO",2019,US,197.47
 "Romain, PONSART",2019,US,187.92
 "Kevin, REYNOLDS",2019,US,185.63
@@ -2091,7 +2091,7 @@ name,year,event,score
 "Boyang, JIN",2019,FR,208.89
 "Daniel, SAMOHIN",2019,FR,205.99
 "Yuzuru, HANYU",2019,RU,278.42
-"Moris, KVITELASHVILI",2019,RU,248.58
+"Morisi, KVITELASHVILI",2019,RU,248.58
 "Kazuki, TOMONO",2019,RU,238.73
 "Mikhail, KOLYADA",2019,RU,225.42
 "Keegan, MESSING",2019,RU,220.75
@@ -2140,7 +2140,7 @@ name,year,event,score
 "Michal, BREZINA",2019,EU,234.25
 "Alexander, MAJOROV",2019,EU,225.38
 "Alexei, BYCHENKO",2019,EU,220.5
-"Moris, KVITELASHVILI",2019,EU,219.79
+"Morisi, KVITELASHVILI",2019,EU,219.79
 "Deniss, VASILJEVS",2019,EU,219.5
 "Adam, SIAO HIM FA",2019,EU,218.06
 "Daniel, SAMOHIN",2019,EU,217.17
@@ -2176,6 +2176,30 @@ name,year,event,score
 "Micah Kai, LYNETTE",2019,4C,174.44
 "Julian Zhi Jie, YEE",2019,4C,174.1
 "Harrison Jon-Yen, WONG",2019,4C,148.54
-"Leslie, IP",2019,4C,146.6
+"Leslie Man Cheuk, IP",2019,4C,146.6
 "Nikita, MANKO",2019,4C,138.4
 "Mark, WEBSTER",2019,4C,126.41
+"Nathan, CHEN",2019,WR,323.42
+"Yuzuru, HANYU",2019,WR,300.97
+"Vincent, ZHOU",2019,WR,281.16
+"Shoma, UNO",2019,WR,270.32
+"Boyang, JIN",2019,WR,262.71
+"Mikhail, KOLYADA",2019,WR,262.44
+"Matteo, RIZZO",2019,WR,257.66
+"Michal, BREZINA",2019,WR,254.28
+"Jason, BROWN",2019,WR,254.15
+"Andrei, LAZUKIN",2019,WR,248.74
+"Kevin, AYMOZ",2019,WR,247.47
+"Alexander, SAMARIN",2019,WR,246.33
+"Morisi, KVITELASHVILI",2019,WR,240.74
+"Keiji, TANAKA",2019,WR,238.4
+"Keegan, MESSING",2019,WR,237.64
+"Nam, NGUYEN",2019,WR,237.27
+"Vladimir, LITVINTSEV",2019,WR,230.84
+"Alexander, MAJOROV",2019,WR,229.72
+"Junhwan, CHA",2019,WR,229.26
+"Brendan, KERRY",2019,WR,222.02
+"Deniss, VASILJEVS",2019,WR,218.52
+"Alexei, BYCHENKO",2019,WR,216.6
+"Julian Zhi Jie, YEE",2019,WR,205.97
+"Daniel, SAMOHIN",2019,WR,205.28
