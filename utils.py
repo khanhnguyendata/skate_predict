@@ -158,7 +158,6 @@ def train_multi_log(season_scores, skater_order=None, init_seed=42,
         # a. Calculate residual for every event-skater pair
         predicted_scores = skater_scores @ event_scores + baseline
         residuals = predicted_scores - true_scores
-            
         
         # Log intermediate values at certain iterations if logging is enabled
         if (i%log_every==0) or (i in additional_iter) or (i==n_iter-1):
@@ -170,9 +169,9 @@ def train_multi_log(season_scores, skater_order=None, init_seed=42,
         baseline = baseline - alpha * baseline_gradient
             
         # c-i: Calculate gradients for all factors
-        residuals = np.nan_to_num(residuals)
-        event_gradients = skater_scores.T @ residuals
-        skater_gradients = residuals @ event_scores.T
+        filled_residuals = np.nan_to_num(residuals)
+        event_gradients = skater_scores.T @ filled_residuals
+        skater_gradients = filled_residuals @ event_scores.T
         
         # c-ii: Update latent scores for all factors
         event_scores = event_scores - alpha * event_gradients
@@ -204,6 +203,93 @@ def train_multi(season_scores, **kwargs):
     skater_scores = pd.DataFrame(skater_scores, index=skater_names) 
     
     return baseline, event_scores, skater_scores    
+
+
+def train_sequential_multi_log(season_scores, n_factors, skater_order=None, init_seed=42,
+             alpha=0.0005, n_iter=1000, verbose=True, additional_iter=[]):
+    '''
+    Run gradient descent on some season scores table (long format)
+    Return skater and event scores (along with final RMSE and other intermediate values if needed)'''
+
+    season_pivot = pd.pivot_table(season_scores[['name', 'event', 'score']], values='score', index='name', columns='event')
+    
+    if skater_order is not None:
+        season_pivot = season_pivot.loc[skater_order]
+        
+    skater_names = list(season_pivot.index)
+    event_names = list(season_pivot.columns)
+    true_scores = season_pivot.values
+    
+    # Create lists to store scores of individual factor
+    multi_skater_scores = []
+    multi_event_scores = []
+    multi_baselines = []
+    all_residuals = []
+    
+    for n in range(n_factors):
+        random_state = np.random.RandomState(init_seed+n)
+        skater_scores = random_state.random_sample((len(skater_names), 1))
+        event_scores = random_state.random_sample((1, len(event_names)))
+        baseline = random_state.random_sample()
+        
+        for i in range(n_iter):
+            # Calculate predicted scores and residuals
+            predicted_scores = skater_scores @ event_scores + baseline
+            residuals = predicted_scores - true_scores
+            
+            # Calculate parameter gradients
+            skater_gradients = np.nansum(residuals * event_scores, axis=1, keepdims=True)
+            event_gradients = np.nansum(residuals * skater_scores, axis=0, keepdims=True)
+            baseline_gradient = np.nansum(residuals)
+
+            # Update parameters
+            event_scores = event_scores - alpha * event_gradients
+            skater_scores = skater_scores - alpha * skater_gradients
+            baseline = baseline - alpha * baseline_gradient            
+        
+            # Print difference in RMSE for last two iterations
+            if verbose and i == (n_iter-1):
+                rmse_old = np.sqrt(np.nanmean(residuals**2))
+                residuals = skater_scores @ event_scores + baseline - true_scores
+                rmse_new = np.sqrt(np.nanmean(residuals**2))
+                print(f'Factor: {n}, Alpha: {alpha}, Iter: {n_iter}, Last RMSE: {round(rmse_new, 3)}, Delta RMSE: {round(rmse_new - rmse_old, 10)}')
+        
+        # Store the latent scores for each factor
+        multi_skater_scores.append(skater_scores.ravel())
+        multi_event_scores.append(event_scores.ravel())
+        multi_baselines.append(baseline)
+        
+        # Calculate final residual before handing its negative to train the next factor
+        final_residuals = skater_scores @ event_scores + baseline - true_scores
+        true_scores = -final_residuals
+        
+        rmse = np.sqrt(np.nanmean(final_residuals**2))
+        yield n, true_scores, event_names, skater_names, multi_baselines, multi_event_scores, multi_skater_scores, rmse
+
+
+def train_sequential_multi(season_scores, **kwargs):
+    '''
+    Run gradient descent on some season scores table (long format)
+    Return latent scores at the end of algorithms
+    '''
+    log_values = None
+    for log_values in train_sequential_multi_log(season_scores, **kwargs):
+        pass
+    
+    event_names = log_values[2]
+    skater_names = log_values[3]
+    multi_baselines = log_values[4]
+    multi_event_scores = log_values[5]
+    multi_skater_scores = log_values[6]
+    
+    # Transform all latent scores into matrices
+    multi_skater_scores = pd.DataFrame(multi_skater_scores).T
+    multi_skater_scores.index = skater_names
+    
+    multi_event_scores = pd.DataFrame(multi_event_scores).T
+    multi_event_scores.index = event_names
+    
+    return multi_baselines, multi_event_scores, multi_skater_scores    
 
 
 def log_gradient_ascent_log(X, alpha=0.001, n_iter=1000, seed=42, log_every=10, additional_iter=[], verbose=True):
@@ -335,99 +421,6 @@ class Model:
                              'tau': taus, 'conc': concordant_pairs, 'pairs': n_pairs}).sort_values(by='year')
 
 
-
-def batch_gd_multi(season_scores, skater_order=None, init_seed=42,
-             alpha=0.0005, n_iter=1000, n_factors = 1,
-             log_iter=False, log_every=10, additional_iter=range(1, 10),
-             return_rmse=False):
-    '''
-    Run gradient descent on some season scores table (long format)
-    Return skater and event scores (along with final RMSE and other intermediate values if needed)'''
-    
-    # Convert long table to pivot table
-    season_pivot = pd.pivot_table(season_scores[['name', 'event', 'score']], values='score', index='name', columns='event')
-    
-    # Modify skater position in pivot table (for aesthetic value only)
-    if skater_order is not None:
-        season_pivot = season_pivot.loc[skater_order]
-        
-    # Store skater and event names to retrieve later
-    skater_names = list(season_pivot.index)
-    event_names = list(season_pivot.columns)
-    
-    # Convert pivot table to numpy array
-    true_scores = season_pivot.values
-
-    # Step 1: Initialize baseline score, and scores of all factors
-    random_state = np.random.RandomState(init_seed)
-    baseline = random_state.random_sample()   
-    event_scores = random_state.random_sample((n_factors, len(event_names)))
-    skater_scores = random_state.random_sample((len(skater_names), n_factors))        
-    
-    # Different lists to contain intermediate values if logging is enabled
-    skater_scores_log = []
-    event_scores_log = []
-    baseline_log = []
-    rmse_log = []
-    residual_log = []
-    iter_log = []
-    
-    # Step 2: repeat until convergence
-    for i in range(n_iter):
-        # a. Calculate residual for every event-skater pair
-        predicted_scores = skater_scores @ event_scores + baseline
-        residuals = predicted_scores - true_scores
-        
-        # Log intermediate values at certain iterations if logging is enabled
-        if log_iter and (i%log_every==0 or (i in additional_iter)):            
-            iter_log.append(i)
-            skater_scores_log.append(pd.DataFrame(skater_scores, index=skater_names))
-            event_scores_log.append(pd.DataFrame(event_scores.T, index=event_names))
-            baseline_log.append(baseline)
-            residual_log.append(residuals)
-            rmse = np.sqrt(np.nanmean(residuals**2))
-            rmse_log.append(rmse)
-    
-        # b. Calculate baseline gradient and update baseline score
-        baseline_gradient = np.nansum(residuals)
-        baseline = baseline - alpha * baseline_gradient
-    
-        # Reshaped matrices
-        reshaped_residuals = residuals[np.newaxis, :, :]
-        reshaped_event_scores = event_scores[:, np.newaxis, :]
-        reshaped_skater_scores = skater_scores.T[:, :, np.newaxis]
-        
-        # c-i: Calculate gradients for all factors
-        residuals = residuals[np.newaxis, :, :]
-        event_gradients = np.nansum(residuals * skater_scores.T[:, :, np.newaxis], axis=1)
-        skater_gradients = np.nansum(residuals * event_scores[:, np.newaxis, :], axis=2)
-        
-        # 2c-ii: Update latent scores for all factors
-        event_scores = event_scores - alpha * event_gradients
-        skater_scores = skater_scores - alpha * skater_gradients.T
-        
-        # Print difference in RMSE for last two iterations
-        if i == (n_iter-1):
-            rmse_old = np.sqrt(np.nanmean(residuals**2))
-            residuals = skater_scores @ event_scores + baseline - true_scores
-            rmse_new = np.sqrt(np.nanmean(residuals**2))
-            print(f'Alpha: {alpha}, Iter: {n_iter}, Last RMSE: {round(rmse_new, 2)}, Delta RMSE: {round(rmse_new - rmse_old, 10)}')
-    
-    # Collect logs together in one list
-    log = [iter_log, true_scores, skater_names, event_names, skater_scores_log, event_scores_log, baseline_log, residual_log, rmse_log]
-
-    # Put event and skater scores back into Series form with names added
-    skater_scores = pd.DataFrame(skater_scores, index=skater_names)
-    event_scores = pd.DataFrame(event_scores.T, index=event_names)
-    
-    if log_iter:
-        return baseline, event_scores, skater_scores, log
-    elif return_rmse:
-        return baseline, event_scores, skater_scores, rmse_new
-    else:
-        return baseline, event_scores, skater_scores
-
-
 class AverageScore(Model):
     def __init__(self):
         super().__init__()    
@@ -512,6 +505,32 @@ class LogLinear(Linear):
         L[0, 0] = 0
         coefs = np.linalg.inv(X.T @ X + self.lambda_reg * L) @ (X.T @ np.log(y))
         return coefs
+
+    def fit(self, season_scores):
+        dummies = pd.get_dummies(season_scores[['name', 'event']], prefix=['', ''], prefix_sep='', drop_first=True)
+        unique_skaters = season_scores['name'].unique()
+        unique_events = season_scores['event'].unique()
+        
+        dummies_skater_count = len(unique_skaters) - 1
+        dummies_skaters = dummies.columns[:dummies_skater_count]
+        dummies_events = dummies.columns[dummies_skater_count:]
+
+        dropped_skater = list(set(unique_skaters) - set(dummies_skaters))[0]
+        dropped_event = list(set(unique_events) - set(dummies_events))[0]
+
+        X = dummies.values
+        X = np.insert(X, 0, 1, axis=1)
+        y = season_scores['score'].values
+        coefs = self.find_coefs(X, y)
+
+        self.baseline = np.exp(coefs[0])
+        self.skater_scores = pd.Series(np.exp(coefs[1:dummies_skater_count+1]), index=dummies_skaters)
+        self.event_scores = pd.Series(np.exp(coefs[dummies_skater_count+1:]), index=dummies_events)
+        self.skater_scores[dropped_skater] = 0
+        self.event_scores[dropped_event] = 0
+        
+        self.skater_scores.sort_values(ascending=False, inplace=True)
+        self.event_scores.sort_values(ascending=False, inplace=True)
     
     def predict(self, season_scores):
         broadcasted_skater_scores = self.skater_scores.loc[season_scores['name']].values
