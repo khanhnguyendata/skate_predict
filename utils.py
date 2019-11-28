@@ -402,7 +402,7 @@ class Model:
         tau = (2 * n_concordant_pairs - n_pairs) / n_pairs
         return tau, n_concordant_pairs, n_pairs
     
-    def evaluate_over_years(self, years, season_df, world_df, **kwargs):
+    def evaluate_over_years(self, years, season_df, world_df, verbose=False, **kwargs):
         taus = []
         rmses = []
         concordant_pairs = []
@@ -411,7 +411,7 @@ class Model:
             season_scores, world_scores = get_yearly_scores(year, season_df, world_df)
             self.fit(season_scores, **kwargs)
             rmse = self.evaluate_rmse(season_scores)
-            tau, concordant_pair, n_pair = self.evaluate_kendall_tau(world_scores, verbose=False)
+            tau, concordant_pair, n_pair = self.evaluate_kendall_tau(world_scores, verbose=verbose)
             
             rmses.append(rmse)
             taus.append(tau)
@@ -526,8 +526,8 @@ class LogLinear(Linear):
         self.baseline = np.exp(coefs[0])
         self.skater_scores = pd.Series(np.exp(coefs[1:dummies_skater_count+1]), index=dummies_skaters)
         self.event_scores = pd.Series(np.exp(coefs[dummies_skater_count+1:]), index=dummies_events)
-        self.skater_scores[dropped_skater] = 0
-        self.event_scores[dropped_event] = 0
+        self.skater_scores[dropped_skater] = 1
+        self.event_scores[dropped_event] = 1
         
         self.skater_scores.sort_values(ascending=False, inplace=True)
         self.event_scores.sort_values(ascending=False, inplace=True)
@@ -535,4 +535,7 @@ class LogLinear(Linear):
     def predict(self, season_scores):
         broadcasted_skater_scores = self.skater_scores.loc[season_scores['name']].values
         broadcasted_event_scores = self.event_scores.loc[season_scores['event']].values
-        return np.exp(broadcasted_skater_scores + broadcasted_event_scores + self.baseline)
+        # print(broadcasted_skater_scores[:5])
+        # print(broadcasted_event_scores[:5])
+        # print(self.baseline)
+        return broadcasted_skater_scores * broadcasted_event_scores * self.baseline
